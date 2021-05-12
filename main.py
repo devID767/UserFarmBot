@@ -20,7 +20,7 @@ def CheckUser(message):
         return False
 
 @app.on_message(filters.text & filters.command("statusAll", prefixes="."))
-def Status(client, message):
+def AllStatus(client, message):
     message.delete()
     message.reply_text(f"CanWork = {CanWork}\n"
                        f"CanSendKits = {CanSendKits}\n\n"
