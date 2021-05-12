@@ -22,7 +22,9 @@ def CheckUser(message):
 @app.on_message(filters.text & filters.command("statusAll", prefixes="."))
 def Status(client, message):
     message.delete()
-    message.reply_text(f"IsWorking = {IsWorking}\n"
+    message.reply_text(f"CanWork = {CanWork}\n"
+                       f"CanSendKits = {CanSendKits}\n\n"
+                       f"IsWorking = {IsWorking}\n"
                        f"IsSending = {IsSending}")
 
 @app.on_message(filters.text & filters.command("status", prefixes="."))
@@ -30,17 +32,10 @@ def Status(client, message):
     if not CheckUser(message):
         return None
     message.delete()
-    message.reply_text(f"IsWorking = {IsWorking}\n"
-                       f"IsSending = {IsSending}")
-
-
-@app.on_message(filters.text & filters.command("settings", prefixes="."))
-def Settings(client, message):
-    if not CheckUser(message):
-        return None
-    message.delete()
     message.reply_text(f"CanWork = {CanWork}\n"
-                       f"CanSendKits = {CanSendKits}")
+                       f"CanSendKits = {CanSendKits}\n\n"
+                       f"IsWorking = {IsWorking}\n"
+                       f"IsSending = {IsSending}")
 
 
 @app.on_message(filters.command("send", prefixes="."))
