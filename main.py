@@ -19,6 +19,12 @@ def CheckUser(message):
     else:
         return False
 
+@app.on_message(filters.text & filters.command("statusAll", prefixes="."))
+def Status(client, message):
+    message.delete()
+    message.reply_text(f"IsWorking = {IsWorking}\n"
+                       f"IsSending = {IsSending}")
+
 @app.on_message(filters.text & filters.command("status", prefixes="."))
 def Status(client, message):
     if not CheckUser(message):
