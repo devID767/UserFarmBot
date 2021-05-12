@@ -11,6 +11,8 @@ CanSendKits = False
 IsSending = False
 
 def CheckUser(message):
+    if message.from_user.is_self:
+        return True
     ReoliedUser = app.get_messages(message.chat.id, reply_to_message_ids=message.message_id).from_user
     if ReoliedUser.is_self:
         return True
