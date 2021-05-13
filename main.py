@@ -120,35 +120,35 @@ def TakeFrog(client, message):
     message.reply_text("Взять жабу", quote=False)
 
 @app.on_message(filters.text & filters.command("class", prefixes="."))
-def TakeFrog(client, message):
+def TakeClass(client, message):
     if not IsSelf(message):
         return None
     message.delete()
     message.reply_text("Выбрать класс Авантюрист", quote=False)
 
 @app.on_message(filters.text & filters.command("inventory", prefixes="."))
-def TakeFrog(client, message):
+def Inventory(client, message):
     if not IsSelf(message):
         return None
     message.delete()
     message.reply_text("Мой инвентарь", quote=False)
 
 @app.on_message(filters.text & filters.command("balance", prefixes="."))
-def TakeFrog(client, message):
+def Balance(client, message):
     if not IsSelf(message):
         return None
     message.delete()
     message.reply_text("Мой баланс", quote=False)
 
 @app.on_message(filters.text & filters.command("sendmoney", prefixes="."))
-def TakeFrog(client, message):
+def SendMoney(client, message):
     if not IsSelf(message):
         return None
     count = int(message.text.split(".sendmoney ", maxsplit=1)[1])
     app.send_message(message.chat.id, f"Отправить букашки {count}", reply_to_message_id=message.message_id)
 
 @app.on_message(filters.text & filters.command("help", prefixes="."))
-def TakeFrog(client, message):
+def Help(client, message):
     if not IsSelf(message):
         return None
     message.delete()
