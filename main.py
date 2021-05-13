@@ -112,4 +112,18 @@ def Working(message, work):
     else:
         message.reply_text("Is Working")
 
+@app.on_message(filters.text & filters.command("take", prefixes="."))
+def TakeFrog(client, message):
+    if not CheckUser(message):
+        return None
+    message.delete()
+    message.reply_text("Взять жабу", quote=False)
+
+@app.on_message(filters.text & filters.command("class", prefixes="."))
+def TakeFrog(client, message):
+    if not CheckUser(message):
+        return None
+    message.delete()
+    message.reply_text("Выбрать класс Авантюрист", quote=False)
+
 app.run()
