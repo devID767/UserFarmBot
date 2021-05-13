@@ -22,7 +22,7 @@ def IsSelf(message):
 def IsAll(message, command):
     text = "None"
     if not IsSelf(message):
-        text = message.text.split(".froginfo ", maxsplit=1)[1]
+        text = message.text.split(command, maxsplit=1)[1]
 
     if text == "all":
         return True
