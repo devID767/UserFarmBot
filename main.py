@@ -2,7 +2,7 @@ from pyrogram import Client, filters
 
 from time import sleep
 
-app = Client("farm_account")
+app = Client("farm_account_1")
 
 CanWork = False
 IsWorking = False
