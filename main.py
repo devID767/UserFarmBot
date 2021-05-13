@@ -19,45 +19,36 @@ def IsSelf(message):
     else:
         return False
 
-@app.on_message(filters.text & filters.command("statusAll", prefixes="."))
-def AllStatus(client, message):
-    message.delete()
-    message.reply_text(f"CanWork = {CanWork}\n"
-                       f"CanSendKits = {CanSendKits}\n\n"
-                       f"IsWorking = {IsWorking}\n"
-                       f"IsSending = {IsSending}")
-
 @app.on_message(filters.text & filters.command("status", prefixes="."))
 def Status(client, message):
-    if not IsSelf(message):
-        return None
-    message.delete()
-    message.reply_text(f"CanWork = {CanWork}\n"
-                       f"CanSendKits = {CanSendKits}\n\n"
-                       f"IsWorking = {IsWorking}\n"
-                       f"IsSending = {IsSending}")
+    command = message.text.split(".status ", maxsplit=1)[1]
+    if command == "all" or IsSelf(message):
+        message.delete()
+        message.reply_text(f"CanWork = {CanWork}\n"
+                           f"CanSendKits = {CanSendKits}\n\n"
+                           f"IsWorking = {IsWorking}\n"
+                           f"IsSending = {IsSending}")
 
 
 @app.on_message(filters.command("send", prefixes="."))
 def SendKitsCommand(client, message):
-    if not IsSelf(message):
-        return None
-    command = message.text.split(".send ", maxsplit=1)[1]
-    #message.delete()
+    if   IsSelf(message):
+        command = message.text.split(".send ", maxsplit=1)[1]
+        #message.delete()
 
-    global CanSendKits
-    global IsSending
+        global CanSendKits
+        global IsSending
 
-    if command == "start":
-        CanSendKits = True
-        message.reply_text("Send started")
-        SendKits(message)
-    elif command == "stop":
-        CanSendKits = False
-        IsSending = False
-        message.reply_text("Send stopped")
-    else:
-        message.reply_text("Unknown command")
+        if command == "start":
+            CanSendKits = True
+            message.reply_text("Send started")
+            SendKits(message)
+        elif command == "stop":
+            CanSendKits = False
+            IsSending = False
+            message.reply_text("Send stopped")
+        else:
+            message.reply_text("Unknown command")
 
 def SendKits(message):
     global IsSending
@@ -75,24 +66,23 @@ def SendKits(message):
 
 @app.on_message(filters.command("work", prefixes="."))
 def WorkCommand(client, message):
-    if not IsSelf(message):
-        return None
-    command = message.text.split(".work ", maxsplit=1)[1]
-    #message.delete()
+    if IsSelf(message):
+        command = message.text.split(".work ", maxsplit=1)[1]
+        #message.delete()
 
-    global CanWork
-    global IsWorking
+        global CanWork
+        global IsWorking
 
-    if command.lower() == "поход в столовую" or command.lower() == "работа крупье" or command.lower() == "работа грабитель":
-        CanWork = True
-        Working(message, command)
-        message.reply_text("Work started")
-    elif command == "stop":
-        CanWork = False
-        IsWorking = False
-        message.reply_text("Work stopped")
-    else:
-        message.reply_text("Unknown command")
+        if command.lower() == "поход в столовую" or command.lower() == "работа крупье" or command.lower() == "работа грабитель":
+            CanWork = True
+            Working(message, command)
+            message.reply_text("Work started")
+        elif command == "stop":
+            CanWork = False
+            IsWorking = False
+            message.reply_text("Work stopped")
+        else:
+            message.reply_text("Unknown command")
 
 def Working(message, work):
     global IsWorking
@@ -114,52 +104,63 @@ def Working(message, work):
 
 @app.on_message(filters.text & filters.command("take", prefixes="."))
 def TakeFrog(client, message):
-    if not IsSelf(message):
-        return None
-    message.delete()
-    message.reply_text("Взять жабу", quote=False)
+    if IsSelf(message):
+        message.delete()
+        message.reply_text("Взять жабу", quote=False)
 
 @app.on_message(filters.text & filters.command("class", prefixes="."))
 def TakeClass(client, message):
-    if not IsSelf(message):
-        return None
-    message.delete()
-    message.reply_text("Выбрать класс Авантюрист", quote=False)
+    if IsSelf(message):
+        message.delete()
+        message.reply_text("Выбрать класс Авантюрист", quote=False)
 
 @app.on_message(filters.text & filters.command("inventory", prefixes="."))
 def Inventory(client, message):
-    if not IsSelf(message):
-        return None
-    message.delete()
-    message.reply_text("Мой инвентарь", quote=False)
+    command = message.text.split(".inventory ", maxsplit=1)[1]
+    if command == "all" or IsSelf(message):
+        message.delete()
+        message.reply_text("Мой инвентарь", quote=False)
 
 @app.on_message(filters.text & filters.command("balance", prefixes="."))
 def Balance(client, message):
-    if not IsSelf(message):
-        return None
-    message.delete()
-    message.reply_text("Мой баланс", quote=False)
+    command = message.text.split(".balance ", maxsplit=1)[1]
+    if command == "all" or IsSelf(message):
+        message.delete()
+        message.reply_text("Мой баланс", quote=False)
+
+@app.on_message(filters.text & filters.command("myfrog", prefixes="."))
+def Frog(client, message):
+    command = message.text.split(".myfrog ", maxsplit=1)[1]
+    if command == "all" or IsSelf(message):
+        message.delete()
+        message.reply_text("Моя жаба", quote=False)
+
+@app.on_message(filters.text & filters.command("froginfo", prefixes="."))
+def Info(client, message):
+    command = message.text.split(".froginfo ", maxsplit=1)[1]
+    if command == "all" or IsSelf(message):
+        message.delete()
+        message.reply_text("Жаба инфо", quote=False)
 
 @app.on_message(filters.text & filters.command("sendmoney", prefixes="."))
 def SendMoney(client, message):
-    if not IsSelf(message):
-        return None
-    count = int(message.text.split(".sendmoney ", maxsplit=1)[1])
-    app.send_message(message.chat.id, f"Отправить букашки {count}", reply_to_message_id=message.message_id)
+    if IsSelf(message):
+        count = int(message.text.split(".sendmoney ", maxsplit=1)[1])
+        app.send_message(message.chat.id, f"Отправить букашки {count}", reply_to_message_id=message.message_id)
 
 @app.on_message(filters.text & filters.command("help", prefixes="."))
 def Help(client, message):
-    if not IsSelf(message):
-        return None
-    message.delete()
-    message.reply_text(f".statusAll\n"
-                       f".status\n"
-                       f".send [start/stop]\n"
-                       f".work [name of work/stop]\n"
-                       f".take (to take frog)\n"
-                       f".class (to take the class)\n"
-                       f".inventory\n"
-                       f".balamce\n"
-                       f".sendmoney [Number]")
+    if IsSelf(message):
+        message.delete()
+        message.reply_text(f".status [all/(repeat)]\n"
+                           f".send [start/stop]\n"
+                           f".work [name of work/stop]\n"
+                           f".take (to take frog)\n"
+                           f".class (to take the class)\n"
+                           f".inventory [all/(repeat)]\n"
+                           f".balance [all/(repeat)]\n"
+                           f".myfrog [all/(repeat)]\n"
+                           f".froginfo all/(repeat)]"
+                           f".sendmoney [Number]")
 
 app.run()
