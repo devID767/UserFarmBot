@@ -19,10 +19,19 @@ def IsSelf(message):
     else:
         return False
 
+def IsAll(message, command):
+    text = "None"
+    if not IsSelf(message):
+        text = message.text.split(".froginfo ", maxsplit=1)[1]
+
+    if text == "all":
+        return True
+    else:
+        return False
+
 @app.on_message(filters.text & filters.command("status", prefixes="."))
 def Status(client, message):
-    command = message.text.split(".status ", maxsplit=1)[1]
-    if command == "all" or IsSelf(message):
+    if IsAll(message, ".status ") or IsSelf(message):
         message.delete()
         message.reply_text(f"CanWork = {CanWork}\n"
                            f"CanSendKits = {CanSendKits}\n\n"
@@ -116,29 +125,25 @@ def TakeClass(client, message):
 
 @app.on_message(filters.text & filters.command("inventory", prefixes="."))
 def Inventory(client, message):
-    command = message.text.split(".inventory ", maxsplit=1)[1]
-    if command == "all" or IsSelf(message):
+    if IsAll(message, ".inventory ") or IsSelf(message):
         message.delete()
         message.reply_text("Мой инвентарь", quote=False)
 
 @app.on_message(filters.text & filters.command("balance", prefixes="."))
 def Balance(client, message):
-    command = message.text.split(".balance ", maxsplit=1)[1]
-    if command == "all" or IsSelf(message):
+    if IsAll(message, ".balance ") or IsSelf(message):
         message.delete()
         message.reply_text("Мой баланс", quote=False)
 
 @app.on_message(filters.text & filters.command("myfrog", prefixes="."))
 def Frog(client, message):
-    command = message.text.split(".myfrog ", maxsplit=1)[1]
-    if command == "all" or IsSelf(message):
+    if IsAll(message, ".myfrog ") or IsSelf(message):
         message.delete()
         message.reply_text("Моя жаба", quote=False)
 
 @app.on_message(filters.text & filters.command("froginfo", prefixes="."))
 def Info(client, message):
-    command = message.text.split(".froginfo ", maxsplit=1)[1]
-    if command == "all" or IsSelf(message):
+    if IsAll(message, ".froginfo ") or IsSelf(message):
         message.delete()
         message.reply_text("Жаба инфо", quote=False)
 
@@ -160,7 +165,7 @@ def Help(client, message):
                            f".inventory [all/(repeat)]\n"
                            f".balance [all/(repeat)]\n"
                            f".myfrog [all/(repeat)]\n"
-                           f".froginfo all/(repeat)]"
+                           f".froginfo all/(repeat)]\n"
                            f".sendmoney [Number]")
 
 app.run()
