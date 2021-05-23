@@ -144,7 +144,7 @@ def WorkCommand(client, message):
 
 @app.on_message(filters.text & filters.command("repeat", prefixes="."))
 def Repeat(client, message):
-    if IsAll(message, ".repeat "):
+    if IsAll(message):
         message.reply_text(message.text.split(maxsplit=2)[2], quote=True)
     elif IsSelf(message):
         message.reply_text(message.text.split(maxsplit=1)[1], quote=True)
