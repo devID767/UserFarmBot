@@ -14,16 +14,16 @@ SendKits = {}
 
 Num = 1
 
-def IsSelf(message):
+async def IsSelf(message):
     if message.from_user.is_self:
         return True
-    RepliedUser = app.get_messages(message.chat.id, reply_to_message_ids=message.message_id)
+    RepliedUser = await app.get_messages(message.chat.id, reply_to_message_ids=message.message_id)
     if RepliedUser.from_user.is_self:
         return True
     else:
         return False
 
-def IsAll(message):
+async def IsAll(message):
     sleep(Num/2)
     text = message.text.split(maxsplit=2)[1]
 
@@ -33,16 +33,16 @@ def IsAll(message):
         return False
 
 @app.on_message(filters.text & filters.command("number", prefixes="."))
-def SetNum(client, message):
-    if IsSelf(message):
+async def SetNum(client, message):
+    if await IsSelf(message):
         message.delete()
     global Num
     Num = int(message.text.split(".number ", maxsplit=1)[1])
-    message.reply_text(f"Мое установленое число = {Num}")
+    await message.reply_text(f"Мое установленое число = {Num}")
 
 @app.on_message(filters.text & filters.command("status", prefixes="."))
-def Status(client, message):
-    if IsSelf(message):
+async def Status(client, message):
+    if await IsSelf(message):
         message.delete()
         try:
             IsWorking = Works.get(message.chat.id).IsWorking
@@ -58,7 +58,7 @@ def Status(client, message):
             IsSendingKits = SendKits.get(message.chat.id).IsSendingKits
         except:
             IsSendingKits = False
-    elif IsAll(message):
+    elif await IsAll(message):
         message.delete()
         try:
             IsWorking = Works.get(message.chat.id).IsWorking
@@ -75,106 +75,90 @@ def Status(client, message):
         except:
             IsSendingKits = False
 
-    message.reply_text(f"IsEating = {IsEating}\n"
+    await message.reply_text(f"IsEating = {IsEating}\n"
                         f"IsWorking = {IsWorking}\n"
                         f"IsSendingKits = {IsSendingKits}"
                         f"Num = {Num}")
 
+async def SendKitsCommand(client, message):
+    command = message.text.split(".send ", maxsplit=1)[1]
+    global SendKits
 
-#@app.on_message(filters.command("send", prefixes="."))
-def SendKitsCommand(client, message):
-    #if IsSelf(message):
-        command = message.text.split(".send ", maxsplit=1)[1]
+    try:
+        sendkits = SendKits[message.chat.id]
+    except:
+        sendkits = Sending.Kits()
+        SendKits[message.chat.id] = sendkits
 
-        global SendKits
+    if command == "start":
+        await sendkits.Start(app, message)
+    elif command == "stop":
+        await sendkits.Stop()
+        del SendKits[message.chat.id]
+        await message.reply_text("Send stopped")
+    else:
+        await message.reply_text("Unknown command")
 
-        try:
-            sendkits = SendKits[message.chat.id]
-        except:
-            sendkits = Sending.Kits()
-            SendKits[message.chat.id] = sendkits
+async def EatCommand(client, message):
+    command = message.text.split(".eat ", maxsplit=1)[1]
+    global Eats
 
-        if command == "start":
-            sendkits.SendingKits(app, message)
-        elif command == "stop":
-            sendkits.IsSendingKits = False
-            sendkits.sendKitsSleep.set()
-            SendKits.pop(message.chat.id)
-            message.reply_text("Send stopped")
-        else:
-            message.reply_text("Unknown command")
+    try:
+        eat = Eats[message.chat.id]
+    except:
+        eat = Sending.Eat()
+        Eats[message.chat.id] = eat
 
-#@app.on_message(filters.command("eat", prefixes="."))
-def EatCommand(client, message):
-    #if IsSelf(message):
-        command = message.text.split(".eat ", maxsplit=1)[1]
-        message.delete()
+    if command.lower() == "покормить жабу" or command.lower() == "откормить жабу":
+        await eat.Start(message, command)
+    elif command == "stop":
+        await eat.Stop()
+        del Eats[message.chat.id]
+        await message.reply_text("Eat stopped")
+    else:
+        await message.reply_text("Unknown command")
 
-        global Eats
+async def WorkCommand(client, message):
+    command = message.text.split(".work ", maxsplit=1)[1]
+    global Works
 
-        try:
-            eat = Eats[message.chat.id]
-        except:
-            eat = Sending.Eat()
-            Eats[message.chat.id] = eat
+    try:
+        work = Works[message.chat.id]
+    except:
+        work = Sending.Work()
+        Works[message.chat.id] = work
 
-        if command.lower() == "покормить жабу" or command.lower() == "откормить жабу":
-            eat.Eating(message, command)
-        elif command == "stop":
-            eat.IsEating = False
-            eat.eatSleep.set()
-            Eats.pop(message.chat.id)
-            message.reply_text("Eat stopped")
-        else:
-            message.reply_text("Unknown command")
-
-#@app.on_message(filters.command("work", prefixes="."))
-def WorkCommand(client, message):
-    #if IsSelf(message):
-        command = message.text.split(".work ", maxsplit=1)[1]
-
-        global Works
-
-        try:
-            work = Works[message.chat.id]
-        except:
-            work = Sending.Work()
-            Works[message.chat.id] = work
-
-        if command.lower() == "поход в столовую" or command.lower() == "работа крупье" or command.lower() == "работа грабитель":
-            work.Working(message, command)
-        elif command == "stop":
-            work.IsWorking = False
-            work.workSleep.set()
-            Works.pop(message.chat.id)
-            message.reply_text("Work stopped")
-        elif command == "finish":
-            message.reply_text("Завершить работу")
-        else:
-            message.reply_text("Unknown command")
+    if command.lower() == "поход в столовую" or command.lower() == "работа крупье" or command.lower() == "работа грабитель":
+        await work.Start(message, command)
+    elif command == "stop":
+        await work.Stop()
+        del Works[message.chat.id]
+        await message.reply_text("Work stopped")
+    else:
+        await message.reply_text("Unknown command")
 
 @app.on_message(filters.text & filters.command("repeat", prefixes="."))
-def Repeat(client, message):
+async def Repeat(client, message):
     count = 0
-    if IsAll(message):
+    if await IsAll(message):
         count +=1
-    elif IsSelf(message):
+    elif await IsSelf(message):
         count = 0
 
-    message.reply_text(message.text.split(maxsplit=1 + count)[1 + count], quote=True)
+    await message.reply_text(message.text.split(maxsplit=1 + count)[1 + count], quote=True)
     if message.text.split(maxsplit=2 + count)[1 + count] == '.work':
-        WorkCommand(client, message)
+        await WorkCommand(client, message)
     elif message.text.split(maxsplit=2 + count)[1 + count] == '.eat':
-        EatCommand(client, message)
+        await EatCommand(client, message)
     elif message.text.split(maxsplit=2 + count)[1 + count] == '.send':
-        SendKitsCommand(client, message)
+        await SendKitsCommand(client, message)
 
 
 @app.on_message(filters.text & filters.command("help", prefixes="."))
-def Help(client, message):
+async def Help(client, message):
     if IsSelf(message):
-        message.delete()
-        message.reply_text(f".status [all/(repeat)]\n"
+        await message.delete()
+        await message.reply_text(f".status [all/(repeat)]\n"
                            f".send [start/stop]\n"
                            f".eat [name of work/stop]\n"
                            f".work [name of work/stop]\n"

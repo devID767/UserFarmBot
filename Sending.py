@@ -1,69 +1,76 @@
-import threading
-
+import asyncio
 
 class Work:
-
     def __init__(self):
-        self.workSleep = threading.Event()
+        self.is_started = False
+        self._task = None
 
-        self.IsWorking = False
+    async def Start(self, message, text):
+        if not self.is_started:
+            self.is_started = True
+            self._task = asyncio.ensure_future(self._Working(message, text))
 
-    def Working(self, message, text):
-        workSleep = self.workSleep
+    async def Stop(self):
+        if self.is_started:
+            self.is_started = False
+            self._task.cancel()
 
-        if not self.IsWorking:
-            self.IsWorking = True
-            while not workSleep.is_set():
-                message.reply_text("Выйти из подземелья", quote=False)
-                message.reply_text("Реанимировать жабу", quote=False)
-                message.reply_text(text, quote=False)
-                workSleep.wait(7210) # 7200
-                message.reply_text("Завершить работу", quote=False)
-                workSleep.wait(21610) # 21600
-            message.reply_text("Работа завершена", quote=False)
-            self.IsWorking = False
-        else:
-            message.reply_text("Is Working")
+    async def _Working(self, message, text):
+        while True:
+            await message.reply_text("Выйти из подземелья", quote=False)
+            await message.reply_text("Реанимировать жабу", quote=False)
+            await message.reply_text(text, quote=False)
+            await asyncio.sleep(7210)  # 7200
 
+            await message.reply_text("Завершить работу", quote=False)
+            await asyncio.sleep(21610)  # 21600
 
 class Eat:
-
     def __init__(self):
-        self.eatSleep = threading.Event()
+        self.is_started = False
+        self._task = None
 
-        self.IsEating = False
-
-    def Eating(self, message, text):
-        eatSleep = self.eatSleep
-
-        if not self.IsEating:
-            self.IsEating = True
-            while not eatSleep.is_set():
-                message.reply_text(text, quote=False)
-                if text.lower() == "Откормить жабу":
-                    eatSleep.wait(14400) #14400
-                else:
-                    eatSleep.wait(43210) #43200
-            message.reply_text("Кормка завершена", quote=False)
-            self.IsEating = False
+    async def Start(self, message, text):
+        if not self.is_started:
+            self.is_started = True
+            self._task = asyncio.ensure_future(self._Eating(message, text))
         else:
-            message.reply_text("Is Eating")
+            await message.reply_text("Жаба уже кушает!", quote=True)
+
+
+    async def Stop(self):
+        if self.is_started:
+            self.is_started = False
+            self._task.cancel()
+
+    async def _Eating(self, message, text):
+        while True:
+            await message.reply_text(text, quote=False)
+            if text.lower() == "откормить жабу":
+                await asyncio.sleep(14410) #14400
+            elif text.lower() == "покормить жабу":
+                await asyncio.sleep(43210) #43200
 
 
 class Kits:
     def __init__(self):
-        self.sendKitsSleep = threading.Event()
+        self.is_started = False
+        self._task = None
 
-        self.IsSendingKits = False
-
-    def SendingKits(self, app, message):
-        sendKitsSleep = self.sendKitsSleep
-
-        if not self.IsSendingKits:
-            IsSendingKits = True
-            while not sendKitsSleep.is_set():
-                app.send_message(message.chat.id, "Отправить аптечки 10", reply_to_message_id=message.message_id)
-                sendKitsSleep.wait(86410)  # 86400
-            IsSendingKits = False
+    async def Start(self, app, message):
+        if not self.is_started:
+            self.is_started = True
+            self._task = asyncio.ensure_future(self._SendingKits(app, message))
         else:
-            message.reply_text("Is sending kits")
+            await message.reply_text("Жаба уже отправляет аптечки!", quote=True)
+
+    async def Stop(self):
+        if self.is_started:
+            self.is_started = False
+            self._task.cancel()
+
+    async def _SendingKits(self, app, message):
+        while True:
+            await message.reply_text("Отправить аптечки 10", quote=True)
+            #await app.send_message(message.chat.id, "Отправить аптечки 10", reply_to_message_id=message.message_id)
+            await asyncio.sleep(86410)  # 86400
