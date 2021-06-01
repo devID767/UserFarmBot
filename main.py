@@ -70,9 +70,9 @@ def Status(client, message):
                         f"IsSendingKits = {IsSendingKits}")
 
 
-@app.on_message(filters.command("send", prefixes="."))
+#@app.on_message(filters.command("send", prefixes="."))
 def SendKitsCommand(client, message):
-    if IsSelf(message):
+    #if IsSelf(message):
         command = message.text.split(".send ", maxsplit=1)[1]
 
         global SendKits
@@ -93,9 +93,9 @@ def SendKitsCommand(client, message):
         else:
             message.reply_text("Unknown command")
 
-@app.on_message(filters.command("eat", prefixes="."))
+#@app.on_message(filters.command("eat", prefixes="."))
 def EatCommand(client, message):
-    if IsSelf(message):
+    #if IsSelf(message):
         command = message.text.split(".eat ", maxsplit=1)[1]
         message.delete()
 
@@ -117,9 +117,9 @@ def EatCommand(client, message):
         else:
             message.reply_text("Unknown command")
 
-@app.on_message(filters.command("work", prefixes="."))
+#@app.on_message(filters.command("work", prefixes="."))
 def WorkCommand(client, message):
-    if IsSelf(message):
+    #if IsSelf(message):
         command = message.text.split(".work ", maxsplit=1)[1]
 
         global Works
@@ -144,11 +144,19 @@ def WorkCommand(client, message):
 
 @app.on_message(filters.text & filters.command("repeat", prefixes="."))
 def Repeat(client, message):
+    count = 0
     if IsAll(message):
-        message.reply_text(message.text.split(maxsplit=2)[2], quote=True)
+        count +=1
     elif IsSelf(message):
-        message.reply_text(message.text.split(maxsplit=1)[1], quote=True)
+        count = 0
 
+    message.reply_text(message.text.split(maxsplit=1 + count)[1 + count], quote=True)
+    if message.text.split(maxsplit=2 + count)[1 + count] == '.work':
+        WorkCommand(client, message)
+    elif message.text.split(maxsplit=2 + count)[1 + count] == '.eat':
+        EatCommand(client, message)
+    elif message.text.split(maxsplit=2 + count)[1 + count] == '.send':
+        SendKitsCommand(client, message)
 
 
 @app.on_message(filters.text & filters.command("help", prefixes="."))
