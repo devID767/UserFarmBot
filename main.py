@@ -12,6 +12,8 @@ Works = {}
 Eats = {}
 SendKits = {}
 
+Num = 1
+
 def IsSelf(message):
     if message.from_user.is_self:
         return True
@@ -22,13 +24,21 @@ def IsSelf(message):
         return False
 
 def IsAll(message):
-    sleep(random.randrange(1, 20, 1)/10)
+    sleep(Num/2)
     text = message.text.split(maxsplit=2)[1]
 
     if text == "all":
         return True
     else:
         return False
+
+@app.on_message(filters.text & filters.command("number", prefixes="."))
+def SetNum(client, message):
+    if IsSelf(message):
+        message.delete()
+    global Num
+    Num = int(message.text.split(".number ", maxsplit=1)[1])
+    message.reply_text(f"Мое установленое число = {Num}")
 
 @app.on_message(filters.text & filters.command("status", prefixes="."))
 def Status(client, message):
@@ -67,7 +77,8 @@ def Status(client, message):
 
     message.reply_text(f"IsEating = {IsEating}\n"
                         f"IsWorking = {IsWorking}\n"
-                        f"IsSendingKits = {IsSendingKits}")
+                        f"IsSendingKits = {IsSendingKits}"
+                        f"Num = {Num}")
 
 
 #@app.on_message(filters.command("send", prefixes="."))
@@ -167,6 +178,7 @@ def Help(client, message):
                            f".send [start/stop]\n"
                            f".eat [name of work/stop]\n"
                            f".work [name of work/stop]\n"
-                           f".repeat [all message/ message]")
+                           f".repeat [all message/ message]"
+                           f".number [num]")
 
 app.run()
