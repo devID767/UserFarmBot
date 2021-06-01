@@ -36,9 +36,9 @@ async def IsAll(message):
 async def SetNum(client, message):
     if await IsSelf(message):
         message.delete()
-    global Num
-    Num = int(message.text.split(".number ", maxsplit=1)[1])
-    await message.reply_text(f"Мое установленое число = {Num}")
+        global Num
+        Num = int(message.text.split(".number ", maxsplit=1)[1])
+        await message.reply_text(f"Мое установленое число = {Num}")
 
 @app.on_message(filters.text & filters.command("status", prefixes="."))
 async def Status(client, message):
@@ -77,7 +77,7 @@ async def Status(client, message):
 
     await message.reply_text(f"IsEating = {IsEating}\n"
                         f"IsWorking = {IsWorking}\n"
-                        f"IsSendingKits = {IsSendingKits}"
+                        f"IsSendingKits = {IsSendingKits}\n"
                         f"Num = {Num}")
 
 async def SendKitsCommand(client, message):

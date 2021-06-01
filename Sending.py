@@ -72,5 +72,4 @@ class Kits:
     async def _SendingKits(self, app, message):
         while True:
             await message.reply_text("Отправить аптечки 10", quote=True)
-            #await app.send_message(message.chat.id, "Отправить аптечки 10", reply_to_message_id=message.message_id)
             await asyncio.sleep(86410)  # 86400
