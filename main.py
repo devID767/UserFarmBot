@@ -40,41 +40,20 @@ async def SetNum(client, message):
         Num = int(message.text.split(".number ", maxsplit=1)[1])
         await message.reply_text(f"Мое установленое число = {Num}")
 
-@app.on_message(filters.text & filters.command("status", prefixes="."))
+#@app.on_message(filters.text & filters.command("status", prefixes="."))
 async def Status(client, message):
-    if await IsSelf(message):
-        message.delete()
-        try:
-            IsWorking = Works.get(message.chat.id).IsWorking
-        except:
-            IsWorking = False
-
-        try:
-            IsEating = Eats.get(message.chat.id).IsEating
-        except:
-            IsEating = False
-
-        try:
-            IsSendingKits = SendKits.get(message.chat.id).IsSendingKits
-        except:
-            IsSendingKits = False
-    elif await IsAll(message):
-        message.delete()
-        try:
-            IsWorking = Works.get(message.chat.id).IsWorking
-        except:
-            IsWorking = False
-
-        try:
-            IsEating = Eats.get(message.chat.id).IsEating
-        except:
-            IsEating = False
-
-        try:
-            IsSendingKits = SendKits.get(message.chat.id).IsSendingKits
-        except:
-            IsSendingKits = False
-
+    try:
+        IsWorking = Works.get(message.chat.id).is_started
+    except:
+        IsWorking = False
+    try:
+        IsEating = Eats.get(message.chat.id).is_started
+    except:
+        IsEating = False
+    try:
+        IsSendingKits = SendKits.get(message.chat.id).is_started
+    except:
+        IsSendingKits = False
     await message.reply_text(f"IsEating = {IsEating}\n"
                         f"IsWorking = {IsWorking}\n"
                         f"IsSendingKits = {IsSendingKits}\n"
@@ -137,22 +116,27 @@ async def WorkCommand(client, message):
     else:
         await message.reply_text("Unknown command")
 
-@app.on_message(filters.text & filters.command("repeat", prefixes="."))
-async def Repeat(client, message):
-    count = 0
-    if await IsAll(message):
-        count +=1
-    elif await IsSelf(message):
-        count = 0
-
-    await message.reply_text(message.text.split(maxsplit=1 + count)[1 + count], quote=True)
+async def SendPepeatMessage(client, message, count):
+    msg = await message.reply_text(message.text.split(maxsplit=1 + count)[1 + count], quote=True)
     if message.text.split(maxsplit=2 + count)[1 + count] == '.work':
         await WorkCommand(client, message)
     elif message.text.split(maxsplit=2 + count)[1 + count] == '.eat':
         await EatCommand(client, message)
     elif message.text.split(maxsplit=2 + count)[1 + count] == '.send':
         await SendKitsCommand(client, message)
+    elif message.text.split(maxsplit=2 + count)[1 + count] == '.status':
+        await msg.delete()
+        await Status(client, message)
 
+@app.on_message(filters.text & filters.command("repeat", prefixes="."))
+async def Repeat(client, message):
+    count = 0
+    if await IsAll(message):
+        count +=1
+        await SendPepeatMessage(client, message, count)
+    elif await IsSelf(message):
+        count = 0
+        await SendPepeatMessage(client, message, count)
 
 @app.on_message(filters.text & filters.command("help", prefixes="."))
 async def Help(client, message):
